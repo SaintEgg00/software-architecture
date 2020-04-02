@@ -36,6 +36,10 @@ public class CategoryService {
         return itemMapper.getItemListByProduct(productId);
     }
 
+    public List<Product> searchProductList(String keyword) {
+        return productMapper.searchProductList("%" + keyword.toLowerCase() + "%");
+    }
+
     public Item getItem(String itemId){
         return itemMapper.getItem(itemId);
     }

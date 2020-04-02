@@ -13,7 +13,10 @@
             </div>
 
             <div id="Banner">
-                IncludeBottom.html
+                <label th:if="(${session.account} != null) and (${session.authenticated})">
+                    <img th:if="${session.account.bannerOption}"
+                         th:src="${#strings.arraySplit(session.account.bannerName,'&quot;')[1]}">
+                </label>
             </div>
 
         </div>

@@ -9,9 +9,10 @@
 <header th:replace="common/top"></header>
 <div id="Content">
     <div id="BackLink">
-        <a th:href="@{/catelog/viewProduct?productId=}+${product.productId}">
+        <a th:href="'/catelog/viewProduct?productId='+${product.productId}">
             Return to <label th:text="${product.productId}">Product ID</label>
         </a>
+
     </div>
 
     <div id="Catalog">
@@ -20,7 +21,7 @@
             <tr>
 
                 <td>
-                    <label><img th:src="${product.descriptionImage}"></label>
+                    <img th:src="${product.descriptionImage}">
                     <label th:text="${product.descriptionText}"></label>
                 </td>
             </tr>
@@ -36,14 +37,14 @@
             <tr>
                 <td>
                     <label th:if="${item.quantity <= 0}">Back ordered.</label>
-                    <label th:if="${item.quantity > 0}" th:text="${item.quantity}+@{in stock.}">Quantity in stock.</label>
+                    <label th:if="${item.quantity > 0}" th:text="${item.quantity}+'in stock.'">Quantity in stock.</label>
                 </td>
             </tr>
             <tr>
-                <td th:text="${item.listPrice}">Item List Price</td>
+                <td th:text="'$'+${#numbers.formatDecimal(item.listPrice,1,2)}">Item List Price</td>
             </tr>
             <tr>
-                <td><a href="#" >Add to Cart</a></td>
+                <td><a th:href="'/cart/addItemToCart?workingItemId='+${item.itemId}" >Add to Cart</a></td>
             </tr>
         </table>
     </div>

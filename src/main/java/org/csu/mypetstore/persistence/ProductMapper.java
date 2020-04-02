@@ -10,4 +10,5 @@ public interface ProductMapper {
     List<Product> getProductListByCategory(String CategoryId);
 
     Product getProduct(String productId);
+    List<Product> searchProductList(String keywords);
 }

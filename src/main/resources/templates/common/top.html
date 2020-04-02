@@ -12,27 +12,25 @@
 
             <div id="Logo">
                 <div id="LogoContent">
-                    <a href="main"><img src="../images/logo-topbar.gif" /></a>
+                    <a href="/catelog/view"><img src="../images/logo-topbar.gif" /></a>
                 </div>
             </div>
 
             <div id="Menu">
                 <div id="MenuContent">
-                    <a href="viewCart"><img align="middle" name="img_cart"
-                                            src="../images/cart.gif" /></a> <img align="middle"
-                                                                                 src="../images/separator.gif" /> <a
-                        href="../account/SignonForm.html">Sign In</a> <a href="#">Sign
-                    Out</a> <img align="middle" src="../images/separator.gif" /> <a
-                        href="#">My Account</a> <img align="middle"
-                                                     src="../images/separator.gif" /> <a href="../help.html">?</a>
+                    <a th:if="${session.account} == null" href="/account/signonForm">Sign In</a>
+                    <a th:if="(${session.account} != null) and (${!session.authenticated}) " href="/account/signonForm">Sign In</a>
+                    <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/signoff">Sign Out</a>
+                    <img th:if="(${session.account} != null) and (${session.authenticated})" align="middle" src="../images/separator.gif" />
+                    <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/editAccountForm">My Account</a>
                 </div>
             </div>
 
             <div id="Search">
                 <div id="SearchContent">
-                    <form action="search" method="post">
-                        <input type="text" name="keyword" size="14" /> <input type="submit"
-                                                                              name="searchProducts" value="Search" />
+                    <form action="/catelog/searchProducts" method="post">
+                        <input type="text" name="keyword" size="14" />
+                        <input type="submit" name="searchProducts" value="Search" />
                     </form>
                 </div>
             </div>

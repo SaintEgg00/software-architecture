@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class CatelogController {
         }
         return "catelog/product";
     }
-    @GetMapping("viewItem")
+    @GetMapping("/viewItem")
     public String viewItem(String itemId, Model model){
         Item item = categoryService.getItem(itemId);
         Product product = item.getProduct();
@@ -53,6 +54,20 @@ public class CatelogController {
         model.addAttribute("item",item);
         model.addAttribute("product",product);
         return "catelog/item";
+    }
+    @PostMapping("/searchProducts")
+    public String searchProducts(String keyword, Model model){
+        if(keyword == null || keyword.length() < 1){
+            String msg = "Please enter a keyword to search for, then press the search button.";
+            model.addAttribute("msg",msg);
+            return "common/error";
+        }else {
+            List<Product> productList = categoryService.searchProductList(keyword.toLowerCase());
+            processProductDescription(productList);
+            model.addAttribute("productList",productList);
+            return "catelog/search_products";
+        }
+
     }
     private void processProductDescription(Product product){
         String [] temp = product.getDescription().split("\"");
