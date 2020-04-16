@@ -3,6 +3,7 @@ package org.csu.mypetstore;
 import org.csu.mypetstore.domain.Category;
 import org.csu.mypetstore.domain.Product;
 import org.csu.mypetstore.persistence.CategoryMapper;
+import org.csu.mypetstore.persistence.OrderMapper;
 import org.csu.mypetstore.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
@@ -16,6 +17,10 @@ import java.util.List;
 class MypetstoreApplicationTests {
     @Autowired
     CategoryMapper categoryMapper;
+
+    @Autowired
+    OrderMapper orderMapper;
+
     @Autowired
     CategoryService categoryService;
 
@@ -36,6 +41,14 @@ class MypetstoreApplicationTests {
         Product p = categoryService.getProduct("AV-CB-01");
         List<Product> list = categoryService.getProductListByCategory("BIRDS");
         System.out.println(list.size());
+    }
+    @Test
+    void orderTest(){
+        Product p = categoryService.getProduct("AV-CB-01");
+        List<Product> list = categoryService.getProductListByCategory("BIRDS");
+        System.out.println(list.size());
+
+
     }
 
 }
