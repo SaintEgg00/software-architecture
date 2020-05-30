@@ -21,8 +21,8 @@ public class Config {
     private static final String domain = "dysmsapi.aliyuncs.com";
 
     /* 此处需要替换成开发者自己的accessKeyId和accessKeySecret(在阿里云访问控制台寻找) */
-    private static final String accessKeyId = "LTAI4FeokCX2r94YsgoTPUMd"; //TODO: 这里要写成你自己生成的
-    private static final String accessKeySecret = "VwdPyIE5lZMMMh4oNzdHktUK677x9l";//TODO: 这里要写成你自己生成的
+    private static final String accessKeyId = ""; //TODO: 这里要写成你自己生成的
+    private static final String accessKeySecret = "";//TODO: 这里要写成你自己生成的
 
     /* 短信发送 */
     public static String sendSms(String phone) throws ClientException {
