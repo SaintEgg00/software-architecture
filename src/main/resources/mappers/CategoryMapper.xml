@@ -6,7 +6,7 @@
     <select id="getCategory" parameterType="string" resultType="Category">
         select catid as categoryId,name,descn as description from category where catid = #{categoryId}
     </select>
-    <!--<select id="getCategoryList" parameterType="">
-
-    </select> -->
+    <select id="getCategoryList" resultType="Category">
+        select catid as categoryId,name,descn as description from category
+    </select>
 </mapper>

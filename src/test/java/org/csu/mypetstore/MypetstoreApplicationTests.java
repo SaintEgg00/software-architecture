@@ -2,8 +2,10 @@ package org.csu.mypetstore;
 
 import org.csu.mypetstore.domain.Category;
 import org.csu.mypetstore.domain.Product;
+import org.csu.mypetstore.domain.Supply;
 import org.csu.mypetstore.persistence.CategoryMapper;
 import org.csu.mypetstore.persistence.OrderMapper;
+import org.csu.mypetstore.persistence.SupplyMapper;
 import org.csu.mypetstore.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.mybatis.spring.annotation.MapperScan;
@@ -23,6 +25,9 @@ class MypetstoreApplicationTests {
 
     @Autowired
     CategoryService categoryService;
+
+    @Autowired
+    SupplyMapper supplyMapper;
 
 
     @Test
@@ -48,7 +53,7 @@ class MypetstoreApplicationTests {
         List<Product> list = categoryService.getProductListByCategory("BIRDS");
         System.out.println(list.size());
 
-
     }
+
 
 }

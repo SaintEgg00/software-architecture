@@ -1,5 +1,7 @@
 package org.csu.mypetstore.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.csu.mypetstore.domain.Category;
 import org.csu.mypetstore.domain.Item;
 import org.csu.mypetstore.domain.Product;
@@ -22,9 +24,7 @@ public class CategoryService {
     public Category getCategory(String categoryId){
         return categoryMapper.getCategory(categoryId);
     }
-    /*public List<Category> getCategoryList(){
-        return categoryMapper.getCategoryList();
-    }*/
+
 
     public Product getProduct(String productId){
         return productMapper.getProduct(productId);
@@ -48,5 +48,14 @@ public class CategoryService {
         return itemMapper.getInventoryQuantity(itemId) > 0;
     }
 
+    public List<Category> getCategoryList(){
+        return categoryMapper.getCategoryList();
+    }
+    public PageInfo<Category> getCategoryList(int page, int limit){
+        PageHelper.startPage(page,limit);
+        List<Category> categoryList = categoryMapper.getCategoryList();
+        PageInfo<Category> pageInfo = new PageInfo<Category>(categoryList);
+        return pageInfo;
+    }
 
 }

@@ -1,6 +1,5 @@
 package org.csu.mypetstore.controller;
 
-import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
 import org.csu.mypetstore.domain.Account;
 import org.csu.mypetstore.domain.Config;
@@ -162,6 +161,7 @@ public class AccountController {
         model.addAttribute("account",t);
         return "account/register";
     }
+
 
 
 
