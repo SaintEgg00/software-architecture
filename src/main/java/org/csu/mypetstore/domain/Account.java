@@ -171,4 +171,27 @@ public class Account implements Serializable {
         this.bannerName = bannerName;
     }
 
+    @Override
+    public String toString() {
+        return "Account{" +
+                "username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", email='" + email + '\'' +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", status='" + status + '\'' +
+                ", address1='" + address1 + '\'' +
+                ", address2='" + address2 + '\'' +
+                ", city='" + city + '\'' +
+                ", state='" + state + '\'' +
+                ", zip='" + zip + '\'' +
+                ", country='" + country + '\'' +
+                ", phone='" + phone + '\'' +
+                ", favouriteCategoryId='" + favouriteCategoryId + '\'' +
+                ", languagePreference='" + languagePreference + '\'' +
+                ", listOption=" + listOption +
+                ", bannerOption=" + bannerOption +
+                ", bannerName='" + bannerName + '\'' +
+                '}';
+    }
 }

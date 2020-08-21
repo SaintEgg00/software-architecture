@@ -1,0 +1,161 @@
+
+<h2  align="center"><a href="javascript:;" onclick="jump()"  th:text="${category.categoryId}" >Product Name</a></h2>
+
+<input id="labelUrl" type="hidden" th:value="${category.categoryId}" />
+<!--拿到model中的值，方便后面js代码取值，拼接到url中-->
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="deleteCheckData">批量删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <div class="layui-inline" style="float:left;height:29px;" title="搜索" lay-event="LAYTABLE_SEARCH"><i class="layui-icon layui-icon-search"></i></div>
+        <input type="text" id="titleProduct" style="width:200px;float:left;height:30px;margin-right:19px;font-size: 15px" placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="check">详情</a>
+
+</script>
+
+
+<script>
+    layui.use('table', function(){
+        var table = layui.table;
+        var data = $("#labelUrl").val();
+        var url = '/admin/productList?categoryId='+data;
+        table.render({
+            elem: '#test'
+            ,url:url
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '用户数据表'
+            ,cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    ,{field:'productId', title:'ID', width:200, fixed: 'left', unresize: true, sort: true}
+                    ,{field:'categoryId', title:'categoryId', width:200}
+                    ,{field:'name', title:'Name', width:200}
+                    ,{field:'description', title:'描述', width:120}
+                    ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:250}
+                ]
+            ]
+            ,page: true
+        }
+
+
+
+        );
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'deleteCheckData':
+                    var data = checkStatus.data;
+                    if(data.length>0){
+                        layer.confirm('确定删除吗',function (index) {
+                            //layer.alert(JSON.stringify(data));
+                            var params="";
+                            $.each(data,function (i,object) {
+                                //object.del();  //在前端页面将其删除
+                                params+='&ids='+object.productId;  //请求参数，要删除的供应商的id
+                            });
+                            $.ajax({
+                                url:'/admin/deleteProductList',
+                                data:params,
+                                method:'post',
+                                success:function (result) {
+                                    if(result.status){
+                                        table.reload('test',{}); //重新加载数据
+
+                                    }
+                                    else {
+                                        alert(result.message);
+                                    }
+                                    layer.close(index);
+                                }
+                            });
+                        })
+                    }
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+                case 'LAYTABLE_SEARCH': //搜索功能
+
+
+                    table.reload('test',{
+                        where: { //设定异步数据接口的额外参数，任意设
+
+                        }
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    })
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    var params;
+                    params='&id='+data.productId;  //请求参数，要删除的供应商的id
+                    $.ajax({
+                        url:'/admin/deleteProduct',
+                        data:params,
+                        method:'post',
+                        success:function (result) {
+                            if(result.status){
+                                table.reload('test',{}); //重新加载数据
+
+                            }
+                            else {
+                                alert(result.message);
+                            }
+                            layer.close(index);
+                        }
+                    });
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 2
+                    ,value: data.email
+                }, function(value, index){
+                    obj.update({
+                        email: value
+                    });
+                    layer.close(index);
+                });
+            }else if(obj.event === 'check'){
+                var url = "/admin/itemPage?productId="+data.productId;
+                ToPage(url);
+            }
+        });
+    });
+    function jump() {
+        ToPage('/admin/categoryPage');
+    }
+</script>

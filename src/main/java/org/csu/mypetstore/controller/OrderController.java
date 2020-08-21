@@ -50,7 +50,7 @@ public class OrderController {
     }
 
     @GetMapping("viewNewOrderForm")
-    public String viewNewOrderForm(@SessionAttribute("account") Account account, @SessionAttribute("cart") Cart cart, Model model) {
+    public String viewNewOrderForm(@SessionAttribute("account") Account account, @SessionAttribute("cart") Cart cart, Model model,HttpSession httpSession) {
 //        若 account 不存在，则报错
         if (account.getUsername() == null) {
             String message = "You must sign on before attempting to check out.  Please sign on and try checking out again.";
@@ -92,6 +92,7 @@ public class OrderController {
             order.setShipState(order.getBillState());
             order.setShipZip(order.getBillZip());
             order.setShipCountry(order.getBillCountry());
+            orderService.insertOrder(order);
             return "order/confirmOrder";
         }
         return "order/shippingOrder";

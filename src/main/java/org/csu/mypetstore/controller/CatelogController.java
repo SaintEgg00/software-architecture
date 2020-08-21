@@ -29,6 +29,7 @@ public class CatelogController {
         if(categoryId != null){
             Category category = categoryService.getCategory(categoryId);
             List<Product> productList = categoryService.getProductListByCategory(categoryId);
+            processProductDescription(productList);
             model.addAttribute("category",category);
             model.addAttribute("productList",productList);
             return "catelog/category";
@@ -67,7 +68,6 @@ public class CatelogController {
             model.addAttribute("productList",productList);
             return "catelog/search_products";
         }
-
     }
     private void processProductDescription(Product product){
         String [] temp = product.getDescription().split("\"");

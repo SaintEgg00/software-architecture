@@ -9,4 +9,37 @@
     <!--<select id="getCategoryList" parameterType="">
 
     </select> -->
+    <update id="updateSupply" parameterType="Supply">
+        UPDATE supplier SET
+            SUPPID = #{suppid},
+            NAME = #{name},
+            STATUS = #{status},
+            ADDR1 = #{addr1},
+            ADDR2 = #{addr2},
+            CITY = #{city},
+            STATE = #{state},
+            ZIP = #{zip},
+            PHONE = #{phone}
+        WHERE suppid = #{suppid}
+    </update>
+    <insert id="addSupply" parameterType="Supply">
+        INSERT INTO supplier
+            (SUPPID,NAME,STATUS,ADDR1,ADDR2,CITY,STATE,ZIP,PHONE)
+        VALUES(
+            #{suppid}, #{name}, #{status}, #{addr1}, #{addr2}, #{city},
+            #{state}, #{zip}, #{phone})
+    </insert>
+    <delete id="deleteSupply" parameterType="int">
+        DELETE FROM supplier
+        WHERE suppid=#{value}
+    </delete>
+    <delete id="deleteSupplyList">
+        DELETE FROM supplier
+        <where>
+            suppid in
+            <foreach collection="array" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
 </mapper>

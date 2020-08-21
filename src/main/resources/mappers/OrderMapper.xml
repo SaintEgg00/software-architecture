@@ -38,6 +38,76 @@
     WHERE ORDERS.ORDERID = #{value}
       AND ORDERS.ORDERID = ORDERSTATUS.ORDERID
   </select>
+    <select id="getOrderList" resultType="order" >
+    select
+      orders.orderid AS orderId,
+      userid AS username,
+      orderdate AS orderDate,
+      BILLADDR1 AS billAddress1,
+      BILLADDR2 AS billAddress2,
+      BILLCITY,
+      BILLCOUNTRY,
+      BILLSTATE,
+      BILLTOFIRSTNAME,
+      BILLTOLASTNAME,
+      BILLZIP,
+      SHIPADDR1 AS shipAddress1,
+      SHIPADDR2 AS shipAddress2,
+      SHIPCITY,
+      SHIPCOUNTRY,
+      SHIPSTATE,
+      SHIPTOFIRSTNAME,
+      SHIPTOLASTNAME,
+      SHIPZIP,
+      CARDTYPE,
+      COURIER,
+      CREDITCARD,
+      EXPRDATE AS expiryDate,
+      LOCALE,
+      TOTALPRICE,
+      STATUS
+    FROM ORDERS, ORDERSTATUS
+    WHERE  ORDERS.ORDERID = ORDERSTATUS.ORDERID
+  </select>
+    <update id="updateOrder"  parameterType="Order" >
+      update orders set
+      userid=#{username},
+      orderdate=#{orderDate},
+      BILLADDR1=#{billAddress1},
+      BILLADDR2=#{billAddress2},
+      BILLCITY=#{billCity},
+      BILLCOUNTRY=#{billCountry},
+      BILLSTATE=#{billState},
+      BILLTOFIRSTNAME=#{billToFirstName},
+      BILLTOLASTNAME=#{billToLastName},
+      BILLZIP=#{billZip},
+      SHIPADDR1=#{shipAddress1},
+      SHIPADDR2=#{shipAddress2},
+      SHIPCITY=#{shipCity},
+      SHIPCOUNTRY=#{shipCountry},
+      SHIPSTATE=#{shipState},
+      SHIPTOFIRSTNAME=#{shipToFirstName},
+      SHIPTOLASTNAME=#{shipToLastName},
+      SHIPZIP=#{shipZip},
+      CARDTYPE=#{cardType},
+      COURIER=#{courier},
+      CREDITCARD=#{creditCard},
+      EXPRDATE=#{expiryDate},
+      LOCALE=#{locale},
+      TOTALPRICE=#{totalPrice}
+      WHERE  ORDERID = #{orderId}
+  </update>
+  <update id="updateOrderStatus" parameterType="OrderStatus">
+    UPDATE orderstatus SET
+                    linenum = #{linenum},
+                    timestamp = #{timestamp},
+                    status = #{status}
+    WHERE orderid = #{orderid}
+  </update>
+
+  <select id="getOrderStatusList" resultType="orderStatus">
+        select * from orderstatus
+  </select>
 
     <select id="getOrdersByUsername" parameterType="string" resultType="order">
     SELECT

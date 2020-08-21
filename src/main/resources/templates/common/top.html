@@ -3,51 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen"/>
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
 </head>
 <body>
 <header th:fragment="header">
     <div id="Header">
-        <div id="Logo">
-            <div id="LogoContent">
-                <a href="/catelog/view"><img src="../images/logo-topbar.gif" /></a>
-            </div>
-        </div>
-
-        <div id="Menu">
+        <div class="font" id="Menu" style="float: right">
             <div id="MenuContent">
-                <a href="/cart/viewCart"><img align="middle" name="img_cart" src="../images/cart.gif" /></a>
-                <img align="middle" src="../images/separator.gif" />
+                <a href="/cart/viewCart"><img align="middle" name="img_cart" src="../images/cart.gif"/></a>
+                <img align="middle" src="../images/separator.gif"/>
                 <a th:if="${session.account} == null" href="/account/signonForm">Sign In</a>
-                <a th:if="(${session.account} != null) and (${!session.authenticated}) " href="/account/signonForm">Sign In</a>
-                <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/signoff">Sign Out</a>
-                <img th:if="(${session.account} != null) and (${session.authenticated})" align="middle" src="../images/separator.gif" />
-                <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/editAccountForm">My Account</a>
-                <img align="middle" src="../images/separator.gif" />
+                <a th:if="(${session.account} != null) and (${!session.authenticated}) " href="/account/signonForm">Sign
+                    In</a>
+                <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/signoff">Sign
+                    Out</a>
+                <img th:if="(${session.account} != null) and (${session.authenticated})" align="middle"
+                     src="../images/separator.gif"/>
+                <a th:if="(${session.account} != null) and (${session.authenticated})" href="/account/editAccountForm">My
+                    Account</a>
+                <img align="middle" src="../images/separator.gif"/>
                 <a href="../help.html">?</a>
             </div>
         </div>
-
-        <div id="Search">
-            <div id="SearchContent">
-                <form action="/catalog/searchProducts" method="post">
-                    <input type="text" name="keyword" size="14" />
-                    <input type="submit" name="searchProducts" value="Search"/>
-                </form>
-            </div>
+        ​
+        <div class="layui-bg-gray font" style="height: 25px;text-align: center;">
+            <a href="/catelog/view">首页</a>
+            <a href="">热门</a>
+            <a href="">交流</a>
+            <a><cite>消息</cite></a>
+            <form action="/catelog/searchProducts" method="post" style="float: left">
+                <input type="text" name="keyword" size="15" style="border: 0px">
+                <i class="layui-icon layui-icon-search"></i>
+                <input type="submit" name="searchProducts" value="Search" style="border:0px; font-family: Optima">
+            </form>
         </div>
-
-        <div id="QuickLinks">
-            <a href="/catelog/viewCategory?categoryId=FISH"><img src="../images/sm_fish.gif" /></a>
-            <img src="../images/separator.gif" />
-            <a href="/catelog/viewCategory?categoryId=DOGS"><img src="../images/sm_dogs.gif" /></a>
-            <img src="../images/separator.gif" />
-            <a href="/catelog/viewCategory?categoryId=REPTILES"><img src="../images/sm_reptiles.gif" /></a>
-            <img src="../images/separator.gif" />
-            <a href="/catelog/viewCategory?categoryId=CATS"><img src="../images/sm_cats.gif" /></a>
-            <img src="../images/separator.gif" />
-            <a href="/catelog/viewCategory?categoryId=BIRDS"><img src="../images/sm_birds.gif" /></a>
-        </div>
+        ​
     </div>
 </header>
 </body>

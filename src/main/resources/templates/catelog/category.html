@@ -3,33 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen"/>
+    <!--    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen"/>-->
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
+    ​
 </head>
 <body>
-<header th:replace="common/top"></header>
+<header><div th:replace="common/top"></div></header>
+​
+<br>
+<br>
 <div id="Content">
-    <div id="BackLink">
-        <a href="/catelog/view">Return to Main Menu</a>
+    <div id="BackLink" class="font" style="float: right">
+        <a href="/catelog/view">Return To Main</a>
     </div>
-
+    ​
+    <br>
+    <br>
+    <h2 th:text="${category.name}" style="text-align: center">Category Name</h2>
+    <br>
+    ​
+    ​
+    ​
+    ​
+    <table class="layui-table font"  lay-skin="nob" lay-size="lg" style="text-align: center">
+        <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+        </colgroup>
+        <thead>
+        <tr>
+            <th style="text-align: center">Product ID</th>
+            <th style="text-align: center">Name</th>
+            <th style="text-align: center">Description</th>
+            <th style="text-align: center">Image</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product:${productList}">
+            <td><a th:href="@{/catelog/viewProduct?productId=}+${product.productId}" th:text="${product.productId}">Product
+                ID</a></td>
+            <td th:text="${product.name}">Product Name</td>
+            <td th:text="${product.descriptionText}"></td>
+            <td ><img th:src="${product.descriptionImage}"></td>
+        </tr>
+        </tbody>
+    </table>
+    ​
     <div id="Catalog">
-
-        <h2 th:text="${category.name}">Category Name</h2>
-
-        <table>
-            <tr>
-                <th>Product ID</th>
-                <th>Name</th>
-            </tr>
-
-            <tr th:each="product:${productList}">
-                <td><a th:href="@{/catelog/viewProduct?productId=}+${product.productId}" th:text="${product.productId}">Product
-                    ID</a></td>
-                <td th:text="${product.name}">Product Name</td>
-            </tr>
-        </table>
+        ​
     </div>
 </div>
-<footer th:replace="common/bottom"></footer>
+<!--<footer th:replace="common/bottom"></footer>-->
 </body>
 </html>

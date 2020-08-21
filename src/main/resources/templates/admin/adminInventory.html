@@ -1,0 +1,44 @@
+<div id="Content">
+    <div id="BackLink">
+        <a href="#">
+            Return to <label th:text="${product.productId}">Product ID</label>
+        </a>
+
+    </div>
+
+    <div id="Catalog">
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th>产品</th>
+            </thead>
+            <tbody>
+            <tr >
+
+                <td>
+                    <img th:src="${product.descriptionImage}">
+                    <label th:text="${product.descriptionText}"></label>
+                </td>
+            </tr>
+            <tr class="danger">
+                <td><b th:text="${item.itemId}">Item ID </b></td>
+            </tr>
+            <tr class="active">
+                <td><b><font size="4" th:text="${item.attribute1}"> Item Attributes </font></b></td></tr>
+            <tr class="success">
+                <td th:text="${product.name}">Product Name</td>
+            </tr>
+            <tr class="info">
+                <td>
+                    <label th:if="${item.quantity <= 0}">Back ordered.</label>
+                    <label th:if="${item.quantity > 0}" th:text="${item.quantity}+'in stock.'">Quantity in stock.</label>
+                </td>
+            </tr>
+            <tr class="warning">
+                <td th:text="'$'+${#numbers.formatDecimal(item.listPrice,1,2)}">Item List Price</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>

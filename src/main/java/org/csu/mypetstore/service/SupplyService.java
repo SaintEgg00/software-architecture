@@ -20,5 +20,17 @@ public class SupplyService {
         PageInfo<Supply> pageInfo = new PageInfo<Supply>(supplyList);
         return pageInfo;
     }
+    public void updateSupply(Supply supply){
+        supplyMapper.updateSupply(supply);
+    }
+    public void addSupply(Supply supply){
+        supplyMapper.addSupply(supply);
+    }
+    public void deleteSupply(int id){
+        supplyMapper.deleteSupply(id);
+    }
+    public void deleteSupplyList(int[] ids){
+        supplyMapper.deleteSupplyList(ids);
+    }
 
 }

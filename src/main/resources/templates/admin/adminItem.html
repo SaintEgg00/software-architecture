@@ -1,0 +1,295 @@
+<h2  align="center"><a href="javascript:;" onclick="jump()"  th:text="${product.productId}" >Product Name</a></h2>
+
+<input id="labelUrl" type="hidden" th:value="${product.productId}" />
+<!--拿到model中的值，方便后面js代码取值，拼接到url中-->
+<input id="labelUrl2" type="hidden" th:value="${product.categoryId}" />
+
+<table class="layui-hide" id="test" lay-filter="test"></table>
+
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="deleteCheckData">删除选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <div class="layui-inline" style="float:left;height:29px;" title="搜索" lay-event="LAYTABLE_SEARCH"><i class="layui-icon layui-icon-search"></i></div>
+        <input type="text" id="titleItem" style="width:200px;float:left;height:30px;margin-right:19px;font-size: 15px" placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+</script>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+    <a class="layui-btn layui-btn-warm layui-btn-xs" lay-event="check">详情</a>
+</script>
+
+
+<script>
+    var data2 = $("#labelUrl2").val();
+    var url2 = '/admin/productPage?categoryId='+data2;
+    layui.use(['table','form','layer'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        var data3 = $("#labelUrl").val();
+        // var data2 = $("#labelUrl2").val();
+        var url = '/admin/itemList?productId='+data3;
+        //var url2 = '/admin/productList?categoryId='+data2;
+        table.render({
+            elem: '#test'
+            ,url:url
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '用户数据表'
+            ,cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    ,{field:'itemId', title:'ID', width:200, fixed: 'left', unresize: true, sort: true}
+                    ,{field:'productId', title:'productId', width:200}
+                    ,{field:'listPrice', title:'listPrice', width:200}
+                    ,{field:'unitCost', title:'unitCost', width:120}
+                    ,{field:'supplierId', title:'supplierId',width:150}
+                    ,{field:'status', title:'status', width:150}
+                    ,{field:'attribute1', title:'attribute1', width:150}
+                    ,{field:'attribute2', title:'attribute2', width:150}
+                    ,{field:'attribute3', title:'attribute3', width:150}
+                    ,{field:'attribute4', title:'attribute4', width:150}
+                    ,{field:'attribute5', title:'attribute5', width:150}
+                    ,{field:'quantity', title:'quantity', width:150}
+                    ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:250}
+                ]
+            ]
+            ,page: true
+        });
+
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'deleteCheckData':
+                    var data = checkStatus.data;
+                    if(data.length>0){
+                        layer.confirm('确定删除吗',function (index) {
+                            //layer.alert(JSON.stringify(data));
+                            var params="";
+                            $.each(data,function (i,object) {
+                                //object.del();  //在前端页面将其删除
+                                params+='&ids='+object.itemId;  //请求参数，要删除的供应商的id
+                            });
+                            $.ajax({
+                                url:'/admin/deleteItemList',
+                                data:params,
+                                method:'post',
+                                success:function (result) {
+                                    if(result.status){
+                                        table.reload('test',{}); //重新加载数据
+
+                                    }
+                                    else {
+                                        alert(result.message);
+                                    }
+                                    layer.close(index);
+                                }
+                            });
+                        })
+                    }
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：'+ data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+                case 'LAYTABLE_SEARCH': //搜索功能
+
+
+                    table.reload('test',{
+                        where: { //设定异步数据接口的额外参数，任意设
+
+                        }
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    })
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    var params;
+                    params='&id='+data.itemId;  //请求参数，要删除的供应商的id
+                    $.ajax({
+                        url:'/admin/deleteItem',
+                        data:params,
+                        method:'post',
+                        success:function (result) {
+                            if(result.status){
+                                table.reload('test',{}); //重新加载数据
+
+                            }
+                            else {
+                                alert(result.message);
+                            }
+                            layer.close(index);
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.open({
+                    type: 1,
+                    title:["编辑","padding-left:5px"],
+                    content: $("#testMain"), //这里content是一个普通的String
+                    shade:false,
+                    area: ['30%', '80%'],
+                    success:function () {
+                        form.render();
+                        a(data);
+                    }
+
+
+                });
+            }else if(obj.event === 'check'){
+                var url="/admin/inventoryPage?itemId="+data.itemId;
+                ToPage(url);
+            }
+        });
+        form.on('submit(formDemo)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            //ToPage('/admin/supplyPage');          var formData = data.field;
+            var formData = data.field;
+            $.ajax({
+                type: "post",  //数据提交方式（post/get）
+                url: "/admin/updateItem",  //提交到的url
+                data: formData,//提交的数据
+                dataType: "text",//返回的数据类型格式
+                success: function(msg) {
+                    //table.reload('test',{});//数据表格重载
+                    alert(msg);
+                    table.reload('test',{});
+                }});
+
+            return false;
+        });
+    });
+
+    function jump() {
+        ToPage(url2);
+    }
+    function a(data) {
+        $("#itemId").val(data.itemId);
+        $("#productId").val(data.productId);
+        $("#listPrice").val(data.listPrice);
+        $("#unitCost").val(data.unitCost);
+        $("#supplierId").val(data.supplierId);
+        $("#status").val(data.status);
+        $("#attribute1").val(data.attribute1);
+        // console.log(data.city);
+        $("#attribute2").val(data.attribute2);
+        //layui.form.render('select');
+        $("#attribute3").val(data.attribute3);
+        //layui.form.render('select');
+        $("#attribute4").val(data.attribute4);
+        $("#attribute5").val(data.attribute5);
+        $("#quantity").val(data.quantity);
+
+
+    }
+
+</script>
+<div id="testMain" style="display: none;padding: 10px;height: 300px;width:500px">
+    <form class="layui-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label" >itemId</label>
+            <div class="layui-input-block">
+                <input type="text" name="itemId" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="itemId">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >productId</label>
+            <div class="layui-input-block">
+                <input type="text" name="productId" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="productId">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >listPrice</label>
+            <div class="layui-input-block">
+                <input type="text" name="listPrice" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="listPrice">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >unitCost</label>
+            <div class="layui-input-block">
+                <input type="text" name="unitCost" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="unitCost">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >supplier</label>
+            <div class="layui-input-block">
+                <input type="text" name="supplierId"    placeholder="请输入标题" autocomplete="off" class="layui-input" id="supplierId">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >Status</label>
+            <div class="layui-input-block">
+                <input type="text" name="status"    placeholder="请输入标题" autocomplete="off" class="layui-input" id="status">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >attribute1</label>
+            <div class="layui-input-block">
+                <input type="text" name="attribute1" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="attribute1">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >attribute2</label>
+            <div class="layui-input-block">
+                <input type="text" name="attribute2"  placeholder="请输入标题" autocomplete="off" class="layui-input" id="attribute2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >attribute3</label>
+            <div class="layui-input-block">
+                <input type="text" name="attribute3"  placeholder="请输入标题" autocomplete="off" class="layui-input" id="attribute3">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >attribute4</label>
+            <div class="layui-input-block">
+                <input type="text" name="attribute4"  placeholder="请输入标题" autocomplete="off" class="layui-input" id="attribute4">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >attribute5</label>
+            <div class="layui-input-block">
+                <input type="text" name="attribute5"  placeholder="请输入标题" autocomplete="off" class="layui-input" id="attribute5">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >quantity</label>
+            <div class="layui-input-block">
+                <input type="text" name="quantity" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="quantity">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>

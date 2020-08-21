@@ -11,6 +11,9 @@
             integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
             crossorigin="anonymous"></script>
     <title>login Form</title>
+    <script>
+
+    </script>
 </head>
 
 <body>
@@ -19,24 +22,28 @@
         <div class="form-body">
             <div class="header">
                 <h2>Login</h2>
-                <p>Don't have an account? <a href="#">Create your Account</a></p>
+                <p>Don't have an account? <a href="/admin/register">Create your Account</a></p>
             </div>
-            <div class="form-group">
-                <div class="input-group">
-                    <input type="text" placeholder="UserName">
+            <form action="/admin/login">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" placeholder="UserName" id="username" name="username">
+                    </div>
+                    <div class="input-group">
+                        <input type="password" placeholder="PassWord" id="password" name="password">
+                    </div>
+                    <div class="input-group flex">
+                        <div class="remember"><input type="checkbox" id="checked"><label for="checked">Rembmer
+                            me</label></div>
+                        <div class="forgot"><a href="/admin/forget">Forgot PassWord?</a></div>
+                    </div>
+                    <p th:if="${msg!=null}" th:text="${msg}"></p>
+                    <div class="input-group right">
+                        <button >Login</button>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <input type="password" placeholder="PassWord">
-                </div>
-                <div class="input-group flex">
-                    <div class="remember"><input type="checkbox" id="checked"><label for="checked">Rembmer
-                        me</label></div>
-                    <div class="forgot"><a href="#">Forgot PassWord?</a></div>
-                </div>
-                <div class="input-group right">
-                    <button>Login</button>
-                </div>
-            </div>
+            </form>
+
         </div>
 
         <div class="form-image">

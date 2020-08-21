@@ -1,9 +1,9 @@
 package org.csu.mypetstore.service;
 
-import org.csu.mypetstore.domain.Item;
-import org.csu.mypetstore.domain.LineItem;
-import org.csu.mypetstore.domain.Order;
-import org.csu.mypetstore.domain.Sequence;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.sun.org.apache.xpath.internal.operations.Or;
+import org.csu.mypetstore.domain.*;
 import org.csu.mypetstore.persistence.ItemMapper;
 import org.csu.mypetstore.persistence.LineItemMapper;
 import org.csu.mypetstore.persistence.OrderMapper;
@@ -51,6 +51,9 @@ public class OrderService {
             lineItemMapper.insertLineItem(lineItem);
         }
     }
+    public void updateOrder(Order order){orderMapper.updateOrder(order);}
+
+    public void updateOrderStatus(OrderStatus orderStatus){orderMapper.updateOrderStatus(orderStatus);}
 
     @Transactional
     public Order getOrder(int orderId) {
@@ -82,6 +85,28 @@ public class OrderService {
         sequenceMapper.updateSequence(parameterObject);
         return sequence.getNextId();
     }
+    public PageInfo<Order> getOrderList(int page, int limit){
+        PageHelper.startPage(page,limit);
+        List<Order> orderList = orderMapper.getOrderList();
+        System.out.println(orderList.size()+"******************");
+        PageInfo<Order> pageInfo = new PageInfo<Order>(orderList);
+        return pageInfo;
+    }
 
 
+    public PageInfo<Order> searchOrderByUsername(int page, int limit, String username) {
+        PageHelper.startPage(page,limit);
+        List<Order> orderList = orderMapper.getOrdersByUsername(username);
+        //System.out.println(orderList.size()+"******************");
+        PageInfo<Order> pageInfo = new PageInfo<Order>(orderList);
+        return pageInfo;
+    }
+
+    public PageInfo<OrderStatus> getOrderStatus(int page, int limit) {
+        PageHelper.startPage(page,limit);
+        List<OrderStatus> orderList = orderMapper.getOrderStatusList();
+        //System.out.println(orderList.size()+"******************");
+        PageInfo<OrderStatus> pageInfo = new PageInfo<OrderStatus>(orderList);
+        return pageInfo;
+    }
 }

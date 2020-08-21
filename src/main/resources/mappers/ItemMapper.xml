@@ -10,6 +10,7 @@
             LISTPRICE,
             UNITCOST,
             SUPPLIER AS supplierId,
+            I.productid AS productId,
             I.PRODUCTID AS "product.productId",
             NAME AS "product.name",
             DESCN AS "product.description",
@@ -19,9 +20,11 @@
             ATTR2 AS attribute2,
             ATTR3 AS attribute3,
             ATTR4 AS attribute4,
-            ATTR5 AS attribute5
-        FROM ITEM I, PRODUCT P
+            ATTR5 AS attribute5,
+            QTY AS quantity
+        FROM ITEM I, PRODUCT P,INVENTORY V
         WHERE P.PRODUCTID = I.PRODUCTID
+          AND I.ITEMID = V.ITEMID
         AND I.PRODUCTID = #{value}
     </select>
 
@@ -59,5 +62,54 @@
             QTY = QTY - #{increment}
         WHERE ITEMID = #{itemId}
     </update>
+    <update id="updateItem" parameterType="Item">
+        UPDATE ITEM I, INVENTORY V SET
+            I.ITEMID=#{itemId},
+            I.PRODUCTID=#{productId},
+            LISTPRICE=#{listPrice},
+            UNITCOST=#{unitCost},
+            SUPPLIER=#{supplierId},
+            STATUS=#{status},
+            ATTR1=#{attribute1},
+            ATTR2=#{attribute2},
+            ATTR3=#{attribute3},
+            ATTR4=#{attribute4},
+            ATTR5=#{attribute5},
+            QTY=#{quantity}
+        WHERE  I.ITEMID = V.ITEMID
+          AND  I.ITEMID = #{itemId}
+    </update>
 
+    <delete id="deleteItem" parameterType="string">
+        DELETE FROM item
+        WHERE itemid=#{value}
+    </delete>
+
+    <delete id="deleteInventory" parameterType="string">
+        DELETE FROM inventory
+        WHERE itemid=#{value}
+    </delete>
+    <delete id="deleteItemList">
+        DELETE FROM item
+        <where>
+            itemid in
+            <foreach collection="array" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+    <delete id="deleteInventoryList">
+        DELETE FROM inventory
+        <where>
+            itemid in
+            <foreach collection="array" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
+        <insert id="insertItem" parameterType="Product">
+            INSERT INTO product(productid,category,name,descn)
+            VALUES
+                (#{productId},#{categoryId},#{name},#{description})
+        </insert>
 </mapper>

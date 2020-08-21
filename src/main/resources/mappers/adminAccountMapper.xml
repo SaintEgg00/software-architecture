@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.csu.mypetstore.persistence.adminAccountMapper">
+    <select id="getAdminByUsername" parameterType="string" resultType="adminAccount">
+        SELECT
+            USERNAME,
+            PASSWORD,
+            PHONE
+        FROM adminAccount
+        WHERE USERNAME = #{username}
+    </select>
+    <select id="getAdminByUsernameAndPassword" parameterType="adminAccount" resultType="adminAccount">
+        SELECT
+            USERNAME,
+            PASSWORD,
+            PHONE
+        FROM adminAccount
+        WHERE USERNAME = #{username}
+        AND password=#{password}
+    </select>
+    <update id="updateAdmin" parameterType="adminAccount">
+        UPDATE adminaccount SET
+            PASSWORD = #{password},
+            PHONE = #{phone}
+        WHERE USERNAME = #{username}
+    </update>
+    <insert id="insertAdmin" parameterType="adminAccount">
+        INSERT INTO adminaccount
+        (username, password, phone)
+        VALUES(
+                  #{username}, #{password}, #{phone}
+                  )
+    </insert>
+</mapper>

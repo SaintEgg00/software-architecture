@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.springframework.util.DigestUtils;
@@ -58,9 +61,10 @@ public class AccountController {
     }
 
     @PostMapping("signon")
-    public String signon(String username, String password, String verifyCode,Model model,HttpServletRequest httpServletRequest){
-        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes());
-        System.out.println(md5Password);
+    public String signon(String username, String password, String verifyCode,Model model,HttpServletRequest httpServletRequest) throws UnsupportedEncodingException {
+        String md5Password = DigestUtils.md5DigestAsHex(password.getBytes(StandardCharsets.UTF_8));
+        System.out.println(password+"^^^^^^^^^");
+        System.out.println(md5Password+"^^^^^^^^^");
         Account account = accountService.getAccount(username,md5Password);
 
         if(account == null){
@@ -144,6 +148,7 @@ public class AccountController {
         String code=Config.sendSms(phoneNumber);
         httpServletRequest.getSession().setAttribute("code",code);
         System.out.println("成功发送短信给"+phoneNumber+"，验证码为"+code);
+        //System.out.println("成功发送短信给"+phoneNumber);
     }
     @PostMapping("newAccount")
     public String newAccount(Account account,Model model,String repeatedPassword){

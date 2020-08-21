@@ -3,30 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen"/>
+    <!--    <link rel="StyleSheet" href="../css/jpetstore.css" type="text/css" media="screen"/>-->
+    <link rel="stylesheet" href="../layui/css/layui.css" media="all">
 </head>
+​
 <body>
 <header th:replace="common/top"></header>
 <div id="Content">
-    <div id="BackLink">
+    <br>
+    <br>
+    <div id="BackLink" class="font" style="float: right">
         <a th:href="'/catelog/viewCategory?categoryId='+${product.categoryId}">
             Return to <label th:text="${product.categoryId}">Category ID</label>
         </a>
     </div>
-
+    <br>
+    <br>
+    ​
+    ​
     <div id="Catalog">
-
-        <h2 th:text="${product.name}">Product Name</h2>
-
-        <table>
+        ​
+        <h2 th:text="${product.name}" style="text-align: center">Product Name</h2>
+        ​
+        <br>
+        ​
+        <table class="layui-table font"  lay-skin="nob" lay-size="lg" style="text-align: center">
+            <colgroup>
+                <col width="150">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
             <tr>
-                <th>Item ID</th>
-                <th>Product ID</th>
-                <th>Description</th>
-                <th>List Price</th>
-                <th>&nbsp;</th>
+                <th style="text-align: center">Item ID</th>
+                <th style="text-align: center">Product ID</th>
+                <th style="text-align: center">Description</th>
+                <th style="text-align: center">List Price</th>
+                <th style="text-align: center"></th>
             </tr>
-
+            </thead>
+            <tbody>
             <tr th:each="item:${itemList}">
                 <td><a th:href="'/catelog/viewItem?itemId='+${item.itemId}" th:text="${item.itemId}" >Item ID</a></td>
                 <td th:text="${item.product.productId}">Product ID</td>
@@ -36,10 +52,32 @@
                 <td th:text="'$'+${#numbers.formatDecimal(item.listPrice,1,2)}">Item List Price</td>
                 <td><a th:href="'/cart/addItemToCart?workingItemId='+${item.itemId}">Add to Cart</a></td>
             </tr>
-
+            </tbody>
         </table>
+        ​
+        ​
+        <!--        <table>-->
+        <!--            <tr>-->
+        <!--                <th>Item ID</th>-->
+        <!--                <th>Product ID</th>-->
+        <!--                <th>Description</th>-->
+        <!--                <th>List Price</th>-->
+        <!--                <th>&nbsp;</th>-->
+        <!--            </tr>-->
+        ​
+        <!--            <tr th:each="item:${itemList}">-->
+        <!--                <td><a th:href="'/catelog/viewItem?itemId='+${item.itemId}" th:text="${item.itemId}" >Item ID</a></td>-->
+        <!--                <td th:text="${item.product.productId}">Product ID</td>-->
+        <!--                <td th:text="${item.attribute1}">-->
+        <!--                    Item Attributes-->
+        <!--                </td>-->
+        <!--                <td th:text="'$'+${#numbers.formatDecimal(item.listPrice,1,2)}">Item List Price</td>-->
+        <!--                <td><a th:href="'/cart/addItemToCart?workingItemId='+${item.itemId}">Add to Cart</a></td>-->
+        <!--            </tr>-->
+        ​
+        <!--        </table>-->
     </div>
 </div>
-<footer th:replace="common/bottom"></footer>
+<!--<footer th:replace="common/bottom"></footer>-->
 </body>
 </html>

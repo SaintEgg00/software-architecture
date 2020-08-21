@@ -1,11 +1,14 @@
 <table class="layui-hide" id="test" lay-filter="test"></table>
 <script type="text/html" id="toolbarDemo">
-    <div class="layui-btn-container">
+    <div >
         <button class="layui-btn layui-btn-sm" lay-event="add">添加新的供货商</button>
         <button class="layui-btn layui-btn-sm" lay-event="delete">批量删除</button>
         <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
         <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
         <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <div class="layui-inline" style="float:left;height:29px;" title="搜索" lay-event="LAYTABLE_SEARCH"><i class="layui-icon layui-icon-search"></i></div>
+        <input type="text" id="title" style="width:200px;float:left;height:30px;margin-right:19px;" placeholder="请输入标题" autocomplete="off" class="layui-input">
+
     </div>
 </script>
 <script type="text/html" id="barDemo">
@@ -49,14 +52,17 @@
             var checkStatus = table.checkStatus(obj.config.id);
             switch(obj.event){
                 case 'add':
-                    var data = checkStatus.data;  //当前选中的数据
-                    layer.alert(JSON.stringify(data));
+                    var data2 = checkStatus.data;  //当前选中的数据
+                    //layer.alert(JSON.stringify(data2));
                     layer.open({
                         type: 1,
                         title:["添加新的供应商","padding-left:5px"],
                         content: $("#addMain"), //这里content是一个普通的String
                         shade:false,
-                        area: '500px'
+                        area: '500px',
+                        success:function () {
+                           form.render();
+                        }
 
                     });
                     break;
@@ -67,11 +73,11 @@
                             //layer.alert(JSON.stringify(data));
                             var params="";
                             $.each(data,function (i,object) {
-                                object.del();  //在前端页面将其删除
+                                //object.del();  //在前端页面将其删除
                                 params+='&ids='+object.suppid;  //请求参数，要删除的供应商的id
                             });
                             $.ajax({
-                                url:'/admin/deleteSupply',
+                                url:'/admin/deleteSupplyList',
                                 data:params,
                                 method:'post',
                                 success:function (result) {
@@ -103,6 +109,19 @@
                 case 'LAYTABLE_TIPS':
                     layer.alert('这是工具栏右侧自定义的一个图标按钮');
                     break;
+
+                case 'LAYTABLE_SEARCH': //搜索功能
+
+
+                    table.reload('test',{
+                        where: { //设定异步数据接口的额外参数，任意设
+
+                        }
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    })
+
             };
         });
 
@@ -114,6 +133,23 @@
             if(obj.event === 'del'){
                 layer.confirm('真的删除行么', function(index){
                     obj.del();
+                    var params;
+                    params='&id='+data.suppid;  //请求参数，要删除的供应商的id
+                    $.ajax({
+                        url:'/admin/deleteSupply',
+                        data:params,
+                        method:'post',
+                        success:function (result) {
+                            if(result.status){
+                                table.reload('test',{}); //重新加载数据
+
+                            }
+                            else {
+                                alert(result.message);
+                            }
+                            layer.close(index);
+                        }
+                    });
                     layer.close(index);
                 });
             } else if(obj.event === 'edit'){
@@ -132,15 +168,50 @@
                     content: $("#testMain"), //这里content是一个普通的String
                     shade:false,
                     area: '500px',
-                    success:a(data)
+                    success:function(){
+                        form.render();
+                        a(data);
+                    }
+
 
                 });
             }
         });
         //监听提交
         form.on('submit(formDemo)', function(data){
-            layer.msg(JSON.stringify(data.field));
-            return true;
+            //layer.msg(JSON.stringify(data.field));
+            //ToPage('/admin/supplyPage');          var formData = data.field;
+            var formData = data.field;
+            $.ajax({
+                type: "post",  //数据提交方式（post/get）
+                url: "/admin/updateSupply",  //提交到的url
+                data: formData,//提交的数据
+                dataType: "text",//返回的数据类型格式
+                success: function(msg) {
+                    //table.reload('test',{});//数据表格重载
+                    alert(msg);
+                    table.reload('test',{});
+                }});
+
+            return false;
+        });
+        form.on('submit(formDemo2)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            //ToPage('/admin/supplyPage');          var formData = data.field;
+            var formData = data.field;
+            $.ajax({
+                type: "post",  //数据提交方式（post/get）
+                url: "/admin/addSupply",  //提交到的url
+                data: formData,//提交的数据
+                dataType: "text",//返回的数据类型格式
+                success: function(msg) {
+                    //table.reload('test',{});//数据表格重载
+                    alert(msg);
+                    ToPage('/admin/supplyPage');
+                    //layer.close(index);//关闭弹出层
+                }});
+
+            return false;
         });
         function a(data) {
 
@@ -163,7 +234,7 @@
 
 </script>
 <div id="testMain" style="display: none;padding: 10px;height: 500px;width:800px">
-    <form class="layui-form" action="/admin/updateSupply">
+    <form class="layui-form" >
         <div class="layui-form-item">
             <label class="layui-form-label" >ID</label>
             <div class="layui-input-block">
@@ -238,7 +309,7 @@
 </div>
 
 <div id="addMain" style="display: none;padding: 10px;height: 500px;width:800px">
-    <form class="layui-form" action="/admin/addSupply">
+    <form class="layui-form" >
         <div class="layui-form-item">
             <label class="layui-form-label" >ID</label>
             <div class="layui-input-block">
@@ -305,7 +376,7 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button class="layui-btn" lay-submit lay-filter="formDemo2">立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>

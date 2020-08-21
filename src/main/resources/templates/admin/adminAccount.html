@@ -1,0 +1,453 @@
+<table class="layui-hide" id="test" lay-filter="test"></table>
+<script type="text/html" id="toolbarDemo">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm" lay-event="delete">批量删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="addData">添加新数据</button>
+        <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+        <div class="layui-inline" style="float:left;height:29px;" title="搜索" lay-event="LAYTABLE_SEARCH"><i class="layui-icon layui-icon-search"></i></div>
+        <input type="text" id="titleAccount" style="width:200px;float:left;height:30px;margin-right:19px;font-size: 15px" placeholder="请输入标题" autocomplete="off" class="layui-input">
+    </div>
+</script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+    var layerIndex;
+    var layerInitWidth;
+    var layerInitHeight;
+    var $;
+    layui.use(['table','form','layer','jquery'], function(){
+        var table = layui.table;
+        var form = layui.form;
+        var layer = layui.layer;
+        $ = layui.jquery;
+        table.render({
+            elem: '#test'
+            ,url:'/admin/accountList'
+            ,page: true
+            ,toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+            ,defaultToolbar: ['filter', 'exports', 'print', { //自定义头部工具栏右侧图标。如无需自定义，去除该参数即可
+                title: '提示'
+                ,layEvent: 'LAYTABLE_TIPS'
+                ,icon: 'layui-icon-tips'
+            }]
+            ,title: '用户数据表'
+            ,cols: [
+                [
+                    {type: 'checkbox', fixed: 'left'}
+                    ,{field:'username', title:'username', width:120, fixed: 'left', unresize: true, sort: true}
+                    ,{field:'email', title:'email', width:120, edit: 'text'}
+                    ,{field:'firstName', title:'firstName', width:120, edit: 'text'}
+                    ,{field:'lastName', title:'lastName', width:120}
+                    ,{field:'status', title:'status',width:120}
+                    ,{field:'address1', title:'address1', width:120}
+                    ,{field:'address2', title:'address2', width:120}
+                    ,{field:'city', title:'city', width:100}
+                    ,{field:'state', title:'state', width:120}
+                    ,{field:'zip', title:'zip', width:120}
+                    ,{field:'country', title:'country', width:120}
+                    ,{field:'phone', title:'phone', width:120}
+                    ,{field:'languagePreference', title:'languagePreference', width:120}
+                    ,{field:'favouriteCategoryId', title:'favouriteCategoryId', width:120}
+                    ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:150}
+                ]
+            ]
+        });
+        //头工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event){
+                case 'delete':
+                    var data = checkStatus.data;
+                    if(data.length>0){
+                        layer.confirm('确定删除吗',function (index) {
+                            //layer.alert(JSON.stringify(data));
+                            var params="";
+                            $.each(data,function (i,object) {
+                                //object.del();  //在前端页面将其删除
+                                params+='&ids='+object.username;  //请求参数，要删除的供应商的id
+                            });
+                            $.ajax({
+                                url:'/admin/deleteAccountList',
+                                data:params,
+                                method:'post',
+                                success:function (result) {
+                                    if(result.status){
+                                        table.reload('test',{}); //重新加载数据
+
+                                    }
+                                    else {
+                                        alert(result.message);
+                                    }
+                                    layer.close(index);
+                                }
+                            });
+                        })
+                    }
+                    break;
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+                    break;
+                case 'addData':
+                    var data = checkStatus.data;
+                    layer.open({
+                        type: 1,
+                        title:["编辑","padding-left:5px"],
+                        content: $("#addMain"), //这里content是一个普通的String
+                        shade:false,
+                        area: ['30%', '80%'],
+                        success:function (){
+                            form.render();
+                        }
+                    });
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选': '未全选');
+                    break;
+                //自定义头工具栏右侧图标 - 提示
+                case 'LAYTABLE_TIPS':
+                    layer.alert('这是工具栏右侧自定义的一个图标按钮');
+                    break;
+                case 'LAYTABLE_SEARCH': //搜索功能
+
+
+                    table.reload('test',{
+                        where: { //设定异步数据接口的额外参数，任意设
+
+                        }
+                        , page: {
+                            curr: 1 //重新从第 1 页开始
+                        }
+                    })
+            };
+        });
+
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            //alert(data);
+            if(obj.event === 'del'){
+                layer.confirm('真的删除行么', function(index){
+                    obj.del();
+                    var params;
+                    params='&id='+data.username;  //请求参数，要删除的供应商的id
+                    $.ajax({
+                        url:'/admin/deleteAccount',
+                        data:params,
+                        method:'post',
+                        success:function (result) {
+                            if(result.status){
+                                table.reload('test',{}); //重新加载数据
+
+                            }
+                            else {
+                                alert(result.message);
+                            }
+                            layer.close(index);
+                        }
+                    });
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                // layer.prompt({
+                //      formType: 2
+                //      ,value: data.name
+                //  }, function(value, index){
+                //      obj.update({
+                //         name: value
+                //      });
+                //      layer.close(index);
+                //  });
+                layer.open({
+                    type: 1,
+                    title:["编辑","padding-left:5px"],
+                    content: $("#testMain"), //这里content是一个普通的String
+                    shade:false,
+                    area: ['30%', '80%'],
+                    success:function () {
+                        form.render();
+                        a(data);
+                    }
+
+
+                });
+            }
+        });
+        //监听提交
+        form.on('submit(formDemo)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            var formData = data.field;
+            $.ajax({
+                type: "post",  //数据提交方式（post/get）
+                url: "/admin/updateAccount",  //提交到的url
+                data: formData,//提交的数据
+                dataType: "text",//返回的数据类型格式
+                success: function(msg) {
+                    //table.reload('test',{});//数据表格重载
+                    alert(msg);
+                    ToPage('/admin/accountPage');
+                    //layer.close(index);//关闭弹出层
+                }});
+            return false;
+        });
+        form.on('submit(formDemo2)', function(data){
+            //layer.msg(JSON.stringify(data.field));
+            var formData = data.field;
+            $.ajax({
+                type: "post",  //数据提交方式（post/get）
+                url: "/admin/addAccount",  //提交到的url
+                data: formData,//提交的数据
+                dataType: "text",//返回的数据类型格式
+                success: function(msg) {
+                    //table.reload('test',{});//数据表格重载
+                    alert(msg);
+                    ToPage('/admin/accountPage');
+                    //layer.close(index);//关闭弹出层
+                }});
+            return false;
+        });
+        function a(data) {
+            $("#username").val(data.username);
+            $("#email").val(data.email);
+            $("#firstName").val(data.firstName);
+            $("#lastName").val(data.lastName);
+            $("#status").val(data.status);
+            $("#address1").val(data.address1);
+            $("#address2").val(data.address2);
+           // console.log(data.city);
+            $("#city").val(data.city);
+            layui.form.render('select');
+            $("#state").val(data.state);
+            layui.form.render('select');
+            $("#zip").val(data.zip);
+            $("#country").val(data.country);
+            $("#phone").val(data.phone);
+            $("#languagePreference").val(data.languagePreference);
+            $("#favouriteCategoryId").val(data.favouriteCategoryId);
+        }
+
+    });
+
+
+</script>
+<div id="testMain" style="display: none;padding: 10px;height: 300px;width:500px">
+    <form class="layui-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label" >username</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="username">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >email</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="email">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >firstName</label>
+            <div class="layui-input-block">
+                <input type="text" name="firstName" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="firstName">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >lastName</label>
+            <div class="layui-input-block">
+                <input type="text" name="lastName" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="lastName">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >STATUS</label>
+            <div class="layui-input-block">
+                <input type="text" name="status"    placeholder="请输入标题" autocomplete="off" class="layui-input" id="status">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ADDRESS1</label>
+            <div class="layui-input-block">
+                <input type="text" name="address1" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="address1">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ADDRESS2</label>
+            <div class="layui-input-block">
+                <input type="text" name="address2"  placeholder="请输入地址" autocomplete="off" class="layui-input" id="address2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">CITY</label>
+            <div class="layui-input-block">
+                <select name="city" lay-verify="required" id="city">
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="San Francisco">San Francisco</option>
+                    <option value="New York">New York</option>
+                    <option value="New York">Palo Alto</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">STATE</label>
+            <div class="layui-input-block">
+                <select name="state" lay-verify="required" id="state">
+                    <option value="AL">AL</option>
+                    <option value="CA">CA</option>
+                    <option value="AR">AR</option>
+                    <option value="AZ">AZ</option>
+                    <option value="CO">CO</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ZIP</label>
+            <div class="layui-input-block">
+                <input type="text" name="zip" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="zip">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >country</label>
+            <div class="layui-input-block">
+                <input type="text" name="country" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="country">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >PHONE</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="phone">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >languagePreference</label>
+            <div class="layui-input-block">
+                <input type="text" name="languagePreference" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="languagePreference">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >favouriteCategoryId</label>
+            <div class="layui-input-block">
+                <input type="text" name="favouriteCategoryId" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="favouriteCategoryId">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<div id="addMain" style="display: none;padding: 10px;height: 300px;width:500px">
+    <form class="layui-form" >
+        <div class="layui-form-item">
+            <label class="layui-form-label" >username</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="username2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >password</label>
+            <div class="layui-input-block">
+                <input type="text" name="password" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="password">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >email</label>
+            <div class="layui-input-block">
+                <input type="text" name="email" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="email2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >firstName</label>
+            <div class="layui-input-block">
+                <input type="text" name="firstName" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="firstName2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >lastName</label>
+            <div class="layui-input-block">
+                <input type="text" name="lastName" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="lastName2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >STATUS</label>
+            <div class="layui-input-block">
+                <input type="text" name="status"    placeholder="请输入标题" autocomplete="off" class="layui-input" id="status2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ADDRESS1</label>
+            <div class="layui-input-block">
+                <input type="text" name="address1" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="address12">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ADDRESS2</label>
+            <div class="layui-input-block">
+                <input type="text" name="address2"  placeholder="请输入地址" autocomplete="off" class="layui-input" id="address22">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">CITY</label>
+            <div class="layui-input-block">
+                <select name="city" lay-verify="required" id="city2">
+                    <option value="Los Angeles">Los Angeles</option>
+                    <option value="San Francisco">San Francisco</option>
+                    <option value="New York">New York</option>
+                    <option value="New York">Palo Alto</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">STATE</label>
+            <div class="layui-input-block">
+                <select name="state" lay-verify="required" id="state2">
+                    <option value="AL">AL</option>
+                    <option value="CA">CA</option>
+                    <option value="AR">AR</option>
+                    <option value="AZ">AZ</option>
+                    <option value="CO">CO</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >ZIP</label>
+            <div class="layui-input-block">
+                <input type="text" name="zip" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="zip2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >country</label>
+            <div class="layui-input-block">
+                <input type="text" name="country" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="country2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >PHONE</label>
+            <div class="layui-input-block">
+                <input type="text" name="phone" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="phone2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >laPreference</label>
+            <div class="layui-input-block">
+                <input type="text" name="languagePreference" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="languagePreference2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label" >favoCategory</label>
+            <div class="layui-input-block">
+                <input type="text" name="favouriteCategoryId" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input" id="favouriteCategoryId2">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formDemo2">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+</div>

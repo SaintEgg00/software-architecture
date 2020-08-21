@@ -19,6 +19,19 @@
         FROM PRODUCT
         WHERE lower(name) like #{value}
     </select>
+    <delete id="deleteProduct" parameterType="string">
+        DELETE FROM product
+        WHERE productid=#{value}
+    </delete>
+    <delete id="deleteProductList">
+        DELETE FROM product
+        <where>
+            productid in
+            <foreach collection="array" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
+        </where>
+    </delete>
 </mapper>
         <!--注意parameterType为string 而 不是 String
         parameterType为String时，需要在mapper接口中定义@Param要传入的字符串名

@@ -304,4 +304,36 @@ public class Order implements Serializable {
         lineItems.add(lineItem);
     }
 
+    @Override
+    public String toString() {
+        return "Order{" +
+                "orderId=" + orderId +
+                ", username='" + username + '\'' +
+                ", orderDate=" + orderDate +
+                ", shipAddress1='" + shipAddress1 + '\'' +
+                ", shipAddress2='" + shipAddress2 + '\'' +
+                ", shipCity='" + shipCity + '\'' +
+                ", shipState='" + shipState + '\'' +
+                ", shipZip='" + shipZip + '\'' +
+                ", shipCountry='" + shipCountry + '\'' +
+                ", billAddress1='" + billAddress1 + '\'' +
+                ", billAddress2='" + billAddress2 + '\'' +
+                ", billCity='" + billCity + '\'' +
+                ", billState='" + billState + '\'' +
+                ", billZip='" + billZip + '\'' +
+                ", billCountry='" + billCountry + '\'' +
+                ", courier='" + courier + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", billToFirstName='" + billToFirstName + '\'' +
+                ", billToLastName='" + billToLastName + '\'' +
+                ", shipToFirstName='" + shipToFirstName + '\'' +
+                ", shipToLastName='" + shipToLastName + '\'' +
+                ", creditCard='" + creditCard + '\'' +
+                ", expiryDate='" + expiryDate + '\'' +
+                ", cardType='" + cardType + '\'' +
+                ", locale='" + locale + '\'' +
+                ", status='" + status + '\'' +
+                ", lineItems=" + lineItems +
+                '}';
+    }
 }
